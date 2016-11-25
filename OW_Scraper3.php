@@ -130,11 +130,11 @@ function getCurrentCharacterStats($characterToStat, $keysToParse){
 
 	$characterStatArray = $DecodedStatFile[$characterToStat];
 
-	echo $characterToStat.' '.$keysToParse,' is ',$characterStatArray[$updatedKey].PHP_EOL;
+	// echo $characterToStat.' '.$keysToParse,' is ',$characterStatArray[$updatedKey].PHP_EOL;
 
 	$statArray = array($updatedKey2 => $characterStatArray[$updatedKey]);
 
-	echo $statArray[$updatedKey2];
+	// echo $statArray[$updatedKey2];
 
 
 }
@@ -182,6 +182,7 @@ function getStatsOverTime($characterToStat, $keysToParse){
 function ripStatsFromFile(){
 	// $blankArray = array();
 	$dateAndStat = array();
+	$test = array();
 	$files = glob('*.{json}', GLOB_BRACE);
 	foreach($files as $file) {
 		$data = file_get_contents ($file);
@@ -193,11 +194,12 @@ function ripStatsFromFile(){
 
 		$minusTheJson = explode('.' , $file);
 		$dateOfFile = $minusTheJson[0];
-		$dateAndStat[$dateOfFile] = $cahar['Ana - Scoped Accuracy'];	
-
+		$dateAndStat[$dateOfFile] = $cahar['Ana - Scoped Accuracy'];
+		array_push($test, array($dateOfFile, $cahar['Ana - Scoped Accuracy']));	
 	}
-
-	// return $dateAndStat
+	// print_r($dateAndStat);
+	$test = array(array(9,1),array(10,2),array(11,3));
+	return $test;
 }
 
 
@@ -302,13 +304,34 @@ ripStatsFromFile();
     		border-color: #00a5e2;
     		background-color: transparent;
 
-			}
-			
+			}		
+			#placeholder {
+			    width: 450px;
+			    height: 200px;
+				}	
 	</style>
+
+
  </head>
 
 
 <body>
+
+
+		 	<!-- Import a library called FLOT to draw a graph. This takes the data in the below format and then plots a variable  -->
+		<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+		<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js"></script>
+ 		<script type="text/javascript">
+		    
+		    <?php $php_array = ripStatsFromFile(); ?> //Call the PHP function to get the formatted data
+			var js_array = <?php echo json_encode($php_array );?>;
+			alert(js_array);
+			$(document).ready(function () {
+			    $.plot($("#placeholder"), [js_array]);
+			});
+		</script>
+
+
 
 	<section id="Favourites">
 		<h1>Overwatch Stats!</h1>
@@ -361,7 +384,9 @@ foreach ($gameDataArray2 as $charlol => $value){ // Print out the values of the 
                </tbody>
             </table>
          </div>
-						
+		<div id="placeholder"></div>
+
+
 
 </body>
 <html>
