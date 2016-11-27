@@ -198,7 +198,7 @@ function ripStatsFromFile(){
 		array_push($test, array($dateOfFile, $cahar['Ana - Scoped Accuracy']));	
 	}
 	// print_r($dateAndStat);
-	$test = array(array(9,1),array(10,2),array(11,3));
+	$test = array(array(1,20),array(2,58),array(3,100));
 	return $test;
 }
 
@@ -318,17 +318,51 @@ ripStatsFromFile();
 <body>
 
 
-		 	<!-- Import a library called FLOT to draw a graph. This takes the data in the below format and then plots a variable  -->
-		<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-		<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.symbol.min.js"></script>
+<script type="text/javascript" src="http://raw.github.com/markrcote/flot-axislabels/master/jquery.flot.axislabels.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.time.min.js"></script>
  		<script type="text/javascript">
 		    
 		    <?php $php_array = ripStatsFromFile(); ?> //Call the PHP function to get the formatted data
 			var js_array = <?php echo json_encode($php_array );?>;
 			alert(js_array);
 			$(document).ready(function () {
-			    $.plot($("#placeholder"), [js_array]);
-			});
+			    $.plot($("#placeholder"), [js_array],{
+			        xaxis: {
+			            min: (new Date(2016, 11, 18)).getTime(),
+			            max: (new Date(2017, 11, 15)).getTime(),
+			            mode: "time",
+			            tickSize: [1, "month"],
+			            monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+
+			        },
+			        yaxis: {
+			            axisLabel: 'Value',
+			            axisLabelUseCanvas: true,
+			            axisLabelFontSizePixels: 12,
+			            axisLabelFontFamily: 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
+			            axisLabelPadding: 5
+			        },
+			        series: {
+			            lines: { show: true },
+			            points: {
+			                radius: 3,
+			                show: true,
+			                fill: true
+			            },
+			        },
+			        grid: {
+			            hoverable: true,
+			            borderWidth: 1
+			        },
+			        legend: {
+			            labelBoxBorderColor: "none",
+			                position: "right"
+			        }
+			    });
+						});
 		</script>
 
 
