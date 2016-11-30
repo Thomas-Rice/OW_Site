@@ -130,11 +130,11 @@ function getCurrentCharacterStats($characterToStat, $keysToParse){
 
 	$characterStatArray = $DecodedStatFile[$characterToStat];
 
-	echo $characterToStat.' '.$keysToParse,' is ',$characterStatArray[$updatedKey].PHP_EOL;
+	// echo $characterToStat.' '.$keysToParse,' is ',$characterStatArray[$updatedKey].PHP_EOL;
 
 	$statArray = array($updatedKey2 => $characterStatArray[$updatedKey]);
 
-	echo $statArray[$updatedKey2];
+	// echo $statArray[$updatedKey2];
 
 
 }
@@ -182,6 +182,7 @@ function getStatsOverTime($characterToStat, $keysToParse){
 function ripStatsFromFile(){
 	// $blankArray = array();
 	$dateAndStat = array();
+	$test = array();
 	$files = glob('*.{json}', GLOB_BRACE);
 	foreach($files as $file) {
 		$data = file_get_contents ($file);
@@ -193,12 +194,27 @@ function ripStatsFromFile(){
 
 		$minusTheJson = explode('.' , $file);
 		$dateOfFile = $minusTheJson[0];
-		$dateAndStat[$dateOfFile] = $cahar['Ana - Scoped Accuracy'];	
-
+		// $dateAndStat[$dateOfFile] = $cahar['Ana - Scoped Accuracy'];
+		$minusThePercentage = explode('%' , $cahar['Ana - Scoped Accuracy']);
+		$newDate = convertDate($dateOfFile);
+		array_push($test, array($newDate, $minusThePercentage[0]));	
 	}
-
-	// return $dateAndStat
+	// print_r($dateAndStat);
+	// $test = array(array(1,20),array(2,58),array(3,100));
+	return $test;
 }
+
+
+//Convert the date to a format for the graph (it's picky)
+function convertDate($date){
+	$minusTheTime = explode('-' , $date); 
+	$temp = str_replace(':', '-' , $minusTheTime[1]);
+	$newDate = strtotime("$temp UTC") * 1000;
+
+	return $newDate;
+
+}
+
 
 
 $battleTag = choosePlayerName('Tikkle#2648');
@@ -302,13 +318,69 @@ ripStatsFromFile();
     		border-color: #00a5e2;
     		background-color: transparent;
 
-			}
-			
+			}		
+			#placeholder {
+			    width: 450px;
+			    height: 200px;
+				}	
 	</style>
+
+
  </head>
 
 
 <body>
+
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.symbol.min.js"></script>
+<script type="text/javascript" src="http://raw.github.com/markrcote/flot-axislabels/master/jquery.flot.axislabels.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.time.min.js"></script>
+ 		<script type="text/javascript">
+		    
+		    <?php $php_array = ripStatsFromFile(); ?> //Call the PHP function to get the formatted data
+			var js_array = <?php echo json_encode($php_array );?>;
+			alert(js_array);
+			$(document).ready(function () {
+			    $.plot($("#placeholder"), [js_array],{
+			        xaxis: {
+			            // min: (new Date(2016, 11, 18)).getTime(),
+			            // max: (new Date(2017, 11, 15)).getTime(),
+			            mode: "time",
+			            // tickSize: [1, "month"],
+			            // monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+			            timeformat: "%d/%m"
+
+			        },
+			        yaxis: {
+			            axisLabel: 'Value',
+			            axisLabelUseCanvas: true,
+			            axisLabelFontSizePixels: 12,
+			            axisLabelFontFamily: 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
+			            axisLabelPadding: 5
+			        },
+			        series: {
+			            lines: { show: true },
+			            points: {
+			                radius: 3,
+			                show: true,
+			                fill: true
+			            },
+			        },
+			        grid: {
+			            hoverable: true,
+			            borderWidth: 1
+			        },
+			        legend: {
+			            labelBoxBorderColor: "none",
+			                position: "right"
+			        }
+			    });
+						});
+		</script>
+
+
 
 	<section id="Favourites">
 		<h1>Overwatch Stats!</h1>
@@ -361,7 +433,9 @@ foreach ($gameDataArray2 as $charlol => $value){ // Print out the values of the 
                </tbody>
             </table>
          </div>
-						
+		<div id="placeholder"></div>
+
+
 
 </body>
 <html>
