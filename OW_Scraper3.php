@@ -179,11 +179,16 @@ function getStatsOverTime($characterToStat, $keysToParse){
 		return $arrayToReturn;
 }
 
-function ripStatsFromFile(){
+function ripStatsFromFile($valueToRead){
 	// $blankArray = array();
 	$dateAndStat = array();
 	$test = array();
 	$files = glob('*.{json}', GLOB_BRACE);
+
+	usort($files, function ($a, $b) {
+   		return filemtime($b) - filemtime($a);
+	});
+	
 	foreach($files as $file) {
 		$data = file_get_contents ($file);
 		$json = json_decode($data, TRUE);
@@ -195,7 +200,7 @@ function ripStatsFromFile(){
 		$minusTheJson = explode('.' , $file);
 		$dateOfFile = $minusTheJson[0];
 		// $dateAndStat[$dateOfFile] = $cahar['Ana - Scoped Accuracy'];
-		$minusThePercentage = explode('%' , $cahar['Ana - Scoped Accuracy']);
+		$minusThePercentage = explode('%' , $cahar[$valueToRead]);
 		$newDate = convertDate($dateOfFile);
 		array_push($test, array($newDate, $minusThePercentage[0]));	
 	}
@@ -229,7 +234,7 @@ $myfile = fopen("$dateAndTime.json", "w");
 fwrite($myfile, json_encode($gameDataArray2, JSON_PRETTY_PRINT));
 fclose($myfile);
 
-ripStatsFromFile();
+
 
 // characterStats('Reaper', 'Souls Consumed')
 // getStatsOverTime('Ana', 'Scoped Accuracy');
@@ -322,6 +327,10 @@ ripStatsFromFile();
 			#placeholder {
 			    width: 450px;
 			    height: 200px;
+				}
+			#placeholder2 {
+			    width: 850px;
+			    height: 200px;
 				}	
 	</style>
 
@@ -339,17 +348,13 @@ ripStatsFromFile();
 <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.time.min.js"></script>
  		<script type="text/javascript">
 		    
-		    <?php $php_array = ripStatsFromFile(); ?> //Call the PHP function to get the formatted data
+		    <?php $php_array = ripStatsFromFile('Ana - Scoped Accuracy'); ?> //Call the PHP function to get the formatted data
 			var js_array = <?php echo json_encode($php_array );?>;
 			alert(js_array);
-			$(document).ready(function () {
+			$(document).ready(function test1() {
 			    $.plot($("#placeholder"), [js_array],{
 			        xaxis: {
-			            // min: (new Date(2016, 11, 18)).getTime(),
-			            // max: (new Date(2017, 11, 15)).getTime(),
 			            mode: "time",
-			            // tickSize: [1, "month"],
-			            // monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
 			            timeformat: "%d/%m"
 
 			        },
@@ -379,13 +384,52 @@ ripStatsFromFile();
 			    });
 						});
 		</script>
+	</body>
+	<body>	
+ 		<script  type="text/javascript">
+		    
+		    <?php $php_array1 = ripStatsFromFile("Ana - Enemies Slept"); ?> //Call the PHP function to get the formatted data
+			var js_array1 = <?php echo json_encode($php_array1 );?>;
+			alert(js_array1);
+			$(document).ready(function test2() {
+			    $.plot($("#placeholder2"), [js_array1],{
+			        xaxis: {
+			            mode: "time",
+			            timeformat: "%d/%m"
 
-
+			        },
+			        yaxis: {
+			            axisLabel: 'Value',
+			            axisLabelUseCanvas: true,
+			            axisLabelFontSizePixels: 12,
+			            axisLabelFontFamily: 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
+			            axisLabelPadding: 5
+			        },
+			        series: {
+			            lines: { show: true },
+			            points: {
+			                radius: 3,
+			                show: true,
+			                fill: true
+			            },
+			        },
+			        grid: {
+			            hoverable: true,
+			            borderWidth: 1
+			        },
+			        legend: {
+			            labelBoxBorderColor: "none",
+			                position: "right"
+			        }
+			    });
+						});
+		</script>
+</body>
 
 	<section id="Favourites">
 		<h1>Overwatch Stats!</h1>
 
-
+<!-- 
 <?php
 foreach ($gameDataArray2 as $charlol => $value){ // Print out the values of the array
 	// echo "Key: $charlol; Value: $value\n";	
@@ -394,7 +438,7 @@ foreach ($gameDataArray2 as $charlol => $value){ // Print out the values of the 
 		<li> <?php echo "Char: $charlol; Key: $key; Value: $values\n"; ?> </li> 
 	<?php }}
 }
-?>
+?> -->
 
 
 </section>
@@ -434,10 +478,15 @@ foreach ($gameDataArray2 as $charlol => $value){ // Print out the values of the 
             </table>
          </div>
 		<div id="placeholder"></div>
+		<h1>LOLOL</h1>
+		<div id="placeholder2"></div>
+		<br>
+		
+		
 
 
 
-</body>
+
 <html>
 
 
