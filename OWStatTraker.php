@@ -117,7 +117,7 @@
 <div id = "TableTitleBar">
 	<h2> Stats </h2>
 </div>
-<?php  include 'OWStatTraker2.php';  ?>
+<?php  include 'dataGatheringFunctions.php';  ?>
 
 
 <script> 
